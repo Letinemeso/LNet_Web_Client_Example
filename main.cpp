@@ -21,8 +21,8 @@ void error(const char *msg)
 int main()
 {
 	int sockfd, portno, n;
-	struct sockaddr_in serv_addr;
-	struct hostent *server;
+	sockaddr_in serv_addr;
+	hostent *server;
 
 	char buffer[256];
 
