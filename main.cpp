@@ -1,11 +1,14 @@
 #include <iostream>
+#include <thread>
+#include <chrono>
+
 #include <string.h>
-#include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <netinet/in.h>
-#include <netdb.h>
 
+#include "Linux_Socket_Implementation.h"
+
+/*
 #ifdef LNET_ASSERT
 	#undef LNET_ASSERT
 #endif
@@ -56,5 +59,29 @@ int main()
 		 error("ERROR reading from socket");
 	printf("%s\n",buffer);
 	close(sockfd);
+	return 0;
+}
+*/
+
+int main()
+{
+	std::cout << "trying to create socket and connect to server!\n";
+
+//	while(true)
+//	{
+//		LNet::Client_Socket_Ptr socket = LNet::Client_Socket_Impl::create("127.0.0.1", 25565);
+//		if(socket.extract_pointer())
+//			break;
+//		else
+//			std::cout << "failure! retrying after 2 seconds\n";
+
+//		std::this_thread::sleep_for(std::chrono::seconds(2));
+//	}
+	LNet::Client_Socket_Ptr socket = LNet::Client_Socket_Impl::create("127.0.0.1", 25565);
+	if(socket.extract_pointer())
+		std::cout << "successfuly connected!\n";
+	else
+		std::cout << "error code: " << errno << "\nerror: " << strerror(errno) << "\n";
+
 	return 0;
 }
