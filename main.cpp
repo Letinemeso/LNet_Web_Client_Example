@@ -77,11 +77,24 @@ int main()
 
 //		std::this_thread::sleep_for(std::chrono::seconds(2));
 //	}
-	LNet::Client_Socket_Ptr socket = LNet::Client_Socket_Impl::create("127.0.0.1", 25565);
-	if(socket.extract_pointer())
+
+	LNet::Client_Socket_Ptr socket_obj = LNet::Client_Socket_Impl::create("127.0.0.1", 25565);
+	if(socket_obj)
 		std::cout << "successfuly connected!\n";
 	else
 		std::cout << "error code: " << errno << "\nerror: " << strerror(errno) << "\n";
+
+	if(socket_obj)
+	{
+		while(true)
+		{
+			std::string msg;
+			std::cin >> msg;
+
+			if(msg == "//") return 0;
+			socket_obj->send_message(msg);
+		}
+	}
 
 	return 0;
 }
