@@ -6,7 +6,9 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 
-#include "Linux_Socket_Implementation.h"
+#include "Linux_Implementation/Socket_Implementation.h"
+
+#include "Debug.h"
 
 /*
 #ifdef LNET_ASSERT
@@ -63,38 +65,113 @@ int main()
 }
 */
 
+#include "Function_Wrapper.h"
+
+struct kostyl_placeholder_class
+{
+
+};
+
+class cl
+{
+public:
+	void dosmth(int arg)
+	{
+		std::cout << "ass\n";
+	}
+
+	void dosmth(int arg, bool agr)
+	{
+		std::cout << "ass\n";
+	}
+
+};
+
+template <typename objtype, typename ftype, typename... argtypes>
+struct wrapper2
+{
+	objtype* obj = nullptr;
+	ftype(objtype::*func)(argtypes...) = nullptr;
+
+	void operator=(wrapper2<objtype, ftype, argtypes...>&& _other)
+	{
+		obj = _other.obj;
+		func = _other.func;
+	}
+
+	wrapper2() { }
+
+	wrapper2(wrapper2<objtype, ftype, argtypes...>&& _other)
+	{
+		obj = _other.obj;
+		func = _other.func;
+	}
+
+	void operator()(argtypes... _args)
+	{
+		if(obj != nullptr)
+			(obj->*func)(_args...);
+		else
+			func(_args...);
+	}
+};
+
+template <typename objtype, typename ftype, typename... argtypes>
+wrapper2<objtype, ftype, argtypes...> create_func_ptr(objtype* _obj, ftype(objtype::*_func)(argtypes...))
+{
+	wrapper2<objtype, ftype, argtypes...> w;
+
+	w.obj = _obj;
+	w.func = _func;
+
+	return w;
+}
+
+template <typename ftype, typename... argtypes>
+wrapper2<kostyl_placeholder_class, ftype, argtypes...> create_func_ptr(ftype(*_func)(argtypes...))
+{
+	wrapper2<kostyl_placeholder_class, ftype, argtypes...> w;
+
+	w.obj = nullptr;
+	w.func = _func;
+
+	return w;
+}
+
 int main()
 {
-	std::cout << "trying to create socket and connect to server!\n";
+	cl c;
 
-//	while(true)
+	wrapper2<cl, void, int> w = create_func_ptr<cl, void, int>(&c, &cl::dosmth);
+	w(1);
+
+//	wrapper w = create_func_ptr(&c, &cl::dosmth);
+
+//	name = &cl::dosmth;
+//	(c.*name)();
+
+//	call(&c, &cl::dosmth);
+
+
+//	LNET_CREATE_LOG_LEVEL("LINUX_SOCKET_LOG_LEVEL");
+
+//	std::cout << "trying to create socket and connect to server!\n";
+
+//	LNet::Client_Socket_Ptr socket_obj = LNet::Client_Socket_Impl::create("127.0.0.1", 25565);
+//	if(socket_obj)
+//		std::cout << "successfuly connected!\n";
+
+//	if(socket_obj)
 //	{
-//		LNet::Client_Socket_Ptr socket = LNet::Client_Socket_Impl::create("127.0.0.1", 25565);
-//		if(socket.extract_pointer())
-//			break;
-//		else
-//			std::cout << "failure! retrying after 2 seconds\n";
+//		while(true)
+//		{
+//			std::string msg;
+//			std::cin >> msg;
 
-//		std::this_thread::sleep_for(std::chrono::seconds(2));
+//			if(msg == "//") return 0;
+//			socket_obj->send_message(msg);
+//		}
 //	}
-
-	LNet::Client_Socket_Ptr socket_obj = LNet::Client_Socket_Impl::create("127.0.0.1", 25565);
-	if(socket_obj)
-		std::cout << "successfuly connected!\n";
-	else
-		std::cout << "error code: " << errno << "\nerror: " << strerror(errno) << "\n";
-
-	if(socket_obj)
-	{
-		while(true)
-		{
-			std::string msg;
-			std::cin >> msg;
-
-			if(msg == "//") return 0;
-			socket_obj->send_message(msg);
-		}
-	}
 
 	return 0;
 }
