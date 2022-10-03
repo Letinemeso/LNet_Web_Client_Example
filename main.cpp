@@ -13,20 +13,21 @@ int main()
 
 	std::cout << "trying to create socket and connect to server!\n";
 
-	WSADATA wsaData;
-	int error = WSAStartup(MAKEWORD(2,2), &wsaData);
-	if (error != 0) {
-		std::cout << "WSAStartup failed: " << error << "\n";
-		return 1;
-	}
+//	WSADATA wsaData;
+//	int error = WSAStartup(MAKEWORD(2,2), &wsaData);
+//	if (error != 0) {
+//		std::cout << "WSAStartup failed: " << error << "\n";
+//		return 1;
+//	}
 
 	LNet::Client_Socket_Ptr socket_obj = LNet::Client_Socket_Impl::create("127.0.0.1", 25565);
 	if(socket_obj)
 		std::cout << "successfuly connected!\n";
 	else
 	{
-		int error = WSAGetLastError();
-		std::cout << "error code: " << error << "\nerror: " << strerror(error) << "\n";
+//		int error = WSAGetLastError();
+//		int error = errno;
+//		std::cout << "error code: " << error << "\nerror: " << strerror(error) << "\n";
 	}
 
 	if(socket_obj)
@@ -41,7 +42,7 @@ int main()
 		}
 	}
 
-	WSACleanup();
+//	WSACleanup();
 
 	return 0;
 }
